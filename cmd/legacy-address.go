@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/dfinity/keysmith/crypto"
-	"github.com/dfinity/keysmith/seed"
+//	"github.com/dfinity/keysmith/seed"
 	eth "github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -19,7 +19,7 @@ type LegacyAddressCmd struct {
 }
 
 type LegacyAddressCmdArgs struct {
-	SeedFile  *string
+	XPub  *string
 	Index     *uint
 	Protected *bool
 }
@@ -27,7 +27,7 @@ type LegacyAddressCmdArgs struct {
 func NewLegacyAddressCmd() *LegacyAddressCmd {
 	fset := flag.NewFlagSet(LEGACY_ADDRESS_CMD, flag.ExitOnError)
 	args := &LegacyAddressCmdArgs{
-		SeedFile:  fset.String("f", "seed.txt", "Seed file."),
+		XPub:  fset.String("x", "", "XPub."),
 		Index:     fset.Uint("i", 0, "Derivation index."),
 		Protected: fset.Bool("p", false, "Password protection."),
 	}
@@ -36,16 +36,13 @@ func NewLegacyAddressCmd() *LegacyAddressCmd {
 
 func (cmd *LegacyAddressCmd) Run() error {
 	cmd.FlagSet.Parse(os.Args[2:])
-	seed, err := seed.Load(*cmd.Args.SeedFile, *cmd.Args.Protected)
-	if err != nil {
-		return err
-	}
-	masterXPrivKey, err := crypto.DeriveMasterXPrivKey(seed)
+	//seed, err := seed.Load(*cmd.Args.XPub, *cmd.Args.Protected)
+	masterXPubKey, err := crypto.LoadXPubKey(*cmd.Args.XPub)
 	if err != nil {
 		return err
 	}
 	_, grandchildECPubKey, err := crypto.DeriveGrandchildECKeyPair(
-		masterXPrivKey,
+		masterXPubKey,
 		uint32(*cmd.Args.Index),
 	)
 	if err != nil {

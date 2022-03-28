@@ -7,7 +7,7 @@ import (
 
 	"github.com/dfinity/keysmith/account"
 	"github.com/dfinity/keysmith/crypto"
-	"github.com/dfinity/keysmith/seed"
+//	"github.com/dfinity/keysmith/seed"
 )
 
 const ACCOUNT_CMD = "account"
@@ -18,7 +18,7 @@ type AccountCmd struct {
 }
 
 type AccountCmdArgs struct {
-	SeedFile  *string
+	XPub  *string
 	Index     *uint
 	Protected *bool
 }
@@ -26,7 +26,7 @@ type AccountCmdArgs struct {
 func NewAccountCmd() *AccountCmd {
 	fset := flag.NewFlagSet(ACCOUNT_CMD, flag.ExitOnError)
 	args := &AccountCmdArgs{
-		SeedFile:  fset.String("f", "seed.txt", "Seed file."),
+		XPub:  fset.String("x", "", "XPub"),
 		Index:     fset.Uint("i", 0, "Derivation index."),
 		Protected: fset.Bool("p", false, "Password protection."),
 	}
@@ -35,6 +35,7 @@ func NewAccountCmd() *AccountCmd {
 
 func (cmd *AccountCmd) Run() error {
 	cmd.FlagSet.Parse(os.Args[2:])
+    /*
 	seed, err := seed.Load(*cmd.Args.SeedFile, *cmd.Args.Protected)
 	if err != nil {
 		return err
@@ -43,8 +44,10 @@ func (cmd *AccountCmd) Run() error {
 	if err != nil {
 		return err
 	}
+    */
+    masterXPubKey, err := crypto.LoadXPubKey(*cmd.Args.XPub)
 	_, grandchildECPubKey, err := crypto.DeriveGrandchildECKeyPair(
-		masterXPrivKey,
+		masterXPubKey,
 		uint32(*cmd.Args.Index),
 	)
 	if err != nil {

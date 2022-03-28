@@ -9,6 +9,11 @@ import (
 
 const DerivationPath = "m/44'/223'/0'"
 
+func LoadXPubKey(xpub string) (*hdkeychain.ExtendedKey, error) {
+    xPrivKey, err := hdkeychain.NewKeyFromString(xpub)
+    return xPrivKey, err
+}
+
 func DeriveMasterXPrivKey(seed []byte) (*hdkeychain.ExtendedKey, error) {
 	masterXPrivKey, err := hdkeychain.NewMaster(
 		seed,
@@ -43,10 +48,9 @@ func DeriveGrandchildECKeyPair(
 	if err != nil {
 		return nil, nil, err
 	}
-	grandchildECPrivKey, err := grandchildXPrivKey.ECPrivKey()
+	grandchildECPrivKey, err := grandchildXPrivKey.ECPubKey()
 	if err != nil {
 		return nil, nil, err
 	}
-	grandchildECPubKey := grandchildECPrivKey.PubKey()
-	return grandchildECPrivKey, grandchildECPubKey, nil
+    return nil, grandchildECPrivKey, nil
 }
